@@ -29,20 +29,20 @@ const (
 )
 
 // TokenParser parses out token
-type TokenParser func(husky.Context) (string, error)
+type TokenParser func(grinder.Context) (string, error)
 
 // DefaultJWT is the default settings for the JWT
 var DefaultJWT = JWTConfig{
 	SigningMethod: AlgoHS256,
 }
 
-// JWTError returns a husky Handler when an error is occured
-func JWTError(c husky.Context) error {
+// JWTError returns a grinder Handler when an error is occured
+func JWTError(c grinder.Context) error {
 	return c.JSON(500, "JWT Error")
 }
 
 // JWT default json web token handler
-func JWT(c husky.Context, handler husky.Handler) husky.Handler {
+func JWT(c grinder.Context, handler grinder.Handler) grinder.Handler {
 	config := config.Load()
 
 	j := DefaultJWT
@@ -75,7 +75,7 @@ func JWT(c husky.Context, handler husky.Handler) husky.Handler {
 
 // expects http://domain.com?token=<HASH>
 func parseFromQuery() TokenParser {
-	return func(c husky.Context) (string, error) {
+	return func(c grinder.Context) (string, error) {
 		token := c.GetParam("token")
 		if token == "" {
 			return "", errors.New("JWT token is missing")

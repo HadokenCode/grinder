@@ -1,0 +1,5 @@
+---
+name: Grinder
+description: Tests for Grinder Framework
+version: 0.1.0
+port: 9999

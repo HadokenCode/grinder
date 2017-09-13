@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/statalite/grinder/config"
+	"github.com/rinkbase/grinder/config"
 )
 
 // Grinder struct holds router and context for framework

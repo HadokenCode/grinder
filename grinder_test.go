@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/statalite/grinder/config"
+	"github.com/rinkbase/grinder/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

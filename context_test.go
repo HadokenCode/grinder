@@ -147,3 +147,14 @@ func TestRedirect(t *testing.T) {
 		assert.Equal(t, 301, w.Code)
 	}
 }
+
+func TestHasParam(t *testing.T) {
+	g := New()
+
+	r, _ := http.NewRequest("GET", "/uri?param=1", strings.NewReader(JSON))
+	w := httptest.NewRecorder()
+
+	c := g.NewContext(w, r)
+
+	assert.True(t, c.HasParam("param"))
+}

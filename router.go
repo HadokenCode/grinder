@@ -2,6 +2,7 @@ package grinder
 
 import (
 	"bytes"
+	"fmt"
 	"regexp"
 )
 
@@ -19,6 +20,7 @@ type Route struct {
 }
 
 const pattern = `([aA-zZ0-9_-]+)`
+const query = `[^&?]*?=[^&?]*`
 
 // Add will add a new route to the Router.routes map
 func (r *Router) Add(m string, p string, h Handler, f []Middleware) {
@@ -77,6 +79,7 @@ func (r *Router) FindRoute(c Context) (bool, Route) {
 				// get form params
 				c.Request().ParseForm()
 				c.AddParams(parseFormParams(c.Request().Form))
+				c.AddParams(parseQueryParams(path))
 			}
 		}
 	}
@@ -104,6 +107,17 @@ func parseURLParams(method string, url string, path string, route string) map[st
 	for i, v := range keys {
 		params[v[1]] = values[i]
 	}
+
+	return params
+}
+
+func parseQueryParams(url string) map[string]string {
+	params := make(map[string]string)
+
+	qre := regexp.MustCompile(query)
+	q := qre.FindAllStringSubmatch(url, -1)[0][1:]
+
+	fmt.Println(q)
 
 	return params
 }

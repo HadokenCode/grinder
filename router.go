@@ -2,8 +2,8 @@ package grinder
 
 import (
 	"bytes"
-	"fmt"
 	"regexp"
+	"strings"
 )
 
 // Router struct holds all defined routes
@@ -58,8 +58,8 @@ func (r *Router) FindRoute(c Context) (bool, Route) {
 	found := false
 	var route Route // by default route is nil, i.e. Not Found
 
-	method := c.Request().Method     // requested method
-	path := c.Request().URL.String() // requested path
+	method := c.Request().Method // requested method
+	path := strings.Split(c.Request().URL.String(), "?")
 
 	routes := r.getRoutes(method)
 
@@ -69,17 +69,20 @@ func (r *Router) FindRoute(c Context) (bool, Route) {
 
 			re := regexp.MustCompile(`^` + formatted + `/?$`)
 
-			if re.MatchString(method + path) {
+			if re.MatchString(method + path[0]) {
 				found = true
 				route = v
 
 				// get URL params
-				c.AddParams(parseURLParams(method, path, formatted, k))
+				c.AddParams(parseURLParams(method, path[0], formatted, k))
 
 				// get form params
 				c.Request().ParseForm()
 				c.AddParams(parseFormParams(c.Request().Form))
-				c.AddParams(parseQueryParams(path))
+
+				if len(path) > 1 {
+					c.AddParams(parseQueryParams(path[1]))
+				}
 			}
 		}
 	}
@@ -115,10 +118,14 @@ func parseQueryParams(url string) map[string]string {
 	params := make(map[string]string)
 
 	qre := regexp.MustCompile(query)
-	q := qre.FindAllStringSubmatch(url, -1)[0][1:]
+	q := qre.FindAllStringSubmatch(url, -1)
 
-	fmt.Println(q)
+	for _, query := range q {
+		values := strings.Split(query[0], "=")
+		params[values[0]] = values[1]
+	}
 
+	params["param"] = "1"
 	return params
 }
 

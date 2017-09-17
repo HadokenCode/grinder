@@ -3,6 +3,7 @@ package grinder
 import (
 	"bytes"
 	"regexp"
+	"strings"
 )
 
 // Router struct holds all defined routes
@@ -19,6 +20,7 @@ type Route struct {
 }
 
 const pattern = `([aA-zZ0-9_-]+)`
+const query = `[^&?]*?=[^&?]*`
 
 // Add will add a new route to the Router.routes map
 func (r *Router) Add(m string, p string, h Handler, f []Middleware) {
@@ -56,8 +58,8 @@ func (r *Router) FindRoute(c Context) (bool, Route) {
 	found := false
 	var route Route // by default route is nil, i.e. Not Found
 
-	method := c.Request().Method     // requested method
-	path := c.Request().URL.String() // requested path
+	method := c.Request().Method // requested method
+	path := strings.Split(c.Request().URL.String(), "?")
 
 	routes := r.getRoutes(method)
 
@@ -67,16 +69,20 @@ func (r *Router) FindRoute(c Context) (bool, Route) {
 
 			re := regexp.MustCompile(`^` + formatted + `/?$`)
 
-			if re.MatchString(method + path) {
+			if re.MatchString(method + path[0]) {
 				found = true
 				route = v
 
 				// get URL params
-				c.AddParams(parseURLParams(method, path, formatted, k))
+				c.AddParams(parseURLParams(method, path[0], formatted, k))
 
 				// get form params
 				c.Request().ParseForm()
 				c.AddParams(parseFormParams(c.Request().Form))
+
+				if len(path) > 1 {
+					c.AddParams(parseQueryParams(path[1]))
+				}
 			}
 		}
 	}
@@ -105,6 +111,21 @@ func parseURLParams(method string, url string, path string, route string) map[st
 		params[v[1]] = values[i]
 	}
 
+	return params
+}
+
+func parseQueryParams(url string) map[string]string {
+	params := make(map[string]string)
+
+	qre := regexp.MustCompile(query)
+	q := qre.FindAllStringSubmatch(url, -1)
+
+	for _, query := range q {
+		values := strings.Split(query[0], "=")
+		params[values[0]] = values[1]
+	}
+
+	params["param"] = "1"
 	return params
 }
 

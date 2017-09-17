@@ -16,6 +16,7 @@ type (
 		AddParams(map[string]string)
 		GetParam(string) string
 		GetParams() map[string]string
+		HasParam(string) bool
 		SetHeader(string, string)
 		GetHeader(string) string
 		Redirect(int, string) error
@@ -88,6 +89,11 @@ func (c *context) GetParam(i string) string {
 
 func (c *context) GetParams() map[string]string {
 	return c.params
+}
+
+func (c *context) HasParam(i string) bool {
+	_, isset := c.params[i]
+	return isset
 }
 
 func (c *context) SetHeader(k string, v string) {

@@ -147,3 +147,20 @@ func TestRedirect(t *testing.T) {
 		assert.Equal(t, 301, w.Code)
 	}
 }
+
+func SampleMethod(ctx Context) error {
+	return ctx.JSON(200, "message")
+}
+
+func TestHasParam(t *testing.T) {
+	g := New()
+
+	g.GET("/uri", SampleMethod)
+
+	r, _ := http.NewRequest("GET", "/uri?query1=1&query2=2", strings.NewReader(JSON))
+	w := httptest.NewRecorder()
+	g.ServeHTTP(w, r)
+
+	assert.True(t, g.GetContext().HasParam("query1"))
+	assert.True(t, g.GetContext().HasParam("query2"))
+}

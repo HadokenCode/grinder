@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/rinkbase/grinder/config"
 )
@@ -172,7 +173,8 @@ func (g *Grinder) NewContext(w http.ResponseWriter, r *http.Request) Context {
 }
 
 func (g *Grinder) add(a string, e string, f Handler, m []Middleware) {
-	g.router.Add(a, e, func(c Context) error {
+	p := strings.Split(e, "?")
+	g.router.Add(a, p[0], func(c Context) error {
 		fn := f
 		return fn(c)
 	}, m)

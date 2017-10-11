@@ -1,13 +1,14 @@
 package grinder
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"strings"
 	"testing"
 
-	"github.com/rinkbase/grinder/config"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -128,9 +129,14 @@ func TestAddPostRoute(t *testing.T) {
 }
 
 func TestConfigLoad(t *testing.T) {
-	config := config.Load("./testdata")
+	// config := config.Load("./testdata")
+	var config map[string]string
+	config, err := godotenv.Read()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
-	assert.True(t, reflect.TypeOf(config).String() == "*viper.Viper")
+	assert.True(t, reflect.TypeOf(config).String() == "map[string]string")
 }
 
 func TestAddPatchRoute(t *testing.T) {

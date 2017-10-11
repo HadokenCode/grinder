@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/rinkbase/grinder/config"
+	"github.com/joho/godotenv"
 )
 
 // Grinder struct holds router and context for framework
@@ -110,14 +110,17 @@ func (g *Grinder) OPTIONS(e string, f Handler, m ...Middleware) {
 
 // Start initates the framework to start listening for requests
 func (g *Grinder) Start() {
-	config := config.Load()
+	config, err := godotenv.Read()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
-	name := config.GetString("name")
-	port := config.GetString("port")
+	name := config["NAME"]
+	port := config["PORT"]
 
 	fmt.Println("==> Running " + name + " on port: " + port)
 
-	err := http.ListenAndServe(":"+port, g)
+	err = http.ListenAndServe(":"+port, g)
 	log.Fatal(err)
 }
 

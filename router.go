@@ -74,7 +74,7 @@ func (r *Router) FindRoute(c Context) (bool, Route) {
 				route = v
 
 				// get URL params
-				c.AddParams(parseURLParams(method, path[0], formatted, k))
+				c.AddParams(r.parseURLParams(method, path[0], formatted, k))
 
 				// get form params
 				c.Request().ParseForm()
@@ -90,7 +90,7 @@ func (r *Router) FindRoute(c Context) (bool, Route) {
 	return found, route
 }
 
-func parseURLParams(method string, url string, path string, route string) map[string]string {
+func (r *Router) parseURLParams(method string, url string, path string, route string) map[string]string {
 	if path == "/" {
 		return make(map[string]string)
 	}

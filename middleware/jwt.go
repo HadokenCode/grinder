@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/joho/godotenv"
 	"github.com/rinkbase/grinder"
-	"github.com/rinkbase/grinder/config"
 )
 
 // JWTConfig holds token information
@@ -43,10 +43,13 @@ func JWTError(c grinder.Context) error {
 
 // JWT default json web token handler
 func JWT(c grinder.Context, handler grinder.Handler) grinder.Handler {
-	config := config.Load()
+	config, err := godotenv.Read()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	j := DefaultJWT
-	j.SigningKey = []byte(config.GetString("JWT_SECRET"))
+	j.SigningKey = []byte(config["JWT_SECRET"])
 
 	parser := parseFromQuery()
 	switch j.ParseFrom {

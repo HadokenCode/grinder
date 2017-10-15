@@ -52,6 +52,7 @@ func NewHTTPError(code int, message ...interface{}) *HTTPError {
 	return err
 }
 
+// makes HTTPError adhere to the Error interface
 func (e *HTTPError) Error() string {
 	return fmt.Sprintf("code=%d, message=%v", e.Code, e.Message)
 }
@@ -127,18 +128,23 @@ func (g *Grinder) OPTIONS(e string, f Handler, m ...Middleware) {
 
 // Start initates the framework to start listening for requests
 func (g *Grinder) Start() {
+	server := g.NewServer()
+	server.ListenAndServe()
+}
+
+// NewServer creates a server object for services
+func (g *Grinder) NewServer() http.Server {
 	config, err := godotenv.Read()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	name := config["NAME"]
-	port := config["PORT"]
+	server := http.Server{
+		Addr:    config["PORT"],
+		Handler: g,
+	}
 
-	fmt.Println("==> Running " + name + " on port: " + port)
-
-	err = http.ListenAndServe(":"+port, g)
-	log.Fatal(err)
+	return server
 }
 
 func (g *Grinder) ServeHTTP(w http.ResponseWriter, r *http.Request) {

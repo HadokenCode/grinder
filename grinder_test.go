@@ -223,3 +223,11 @@ func TestErrorHTTP(t *testing.T) {
 
 	assert.Equal(t, "code=404, message=Not Found", err.Error())
 }
+
+func TestAServerIsReturned(t *testing.T) {
+	g := New()
+
+	server := g.NewServer()
+
+	assert.True(t, reflect.TypeOf(server).String() == "http.Server")
+}

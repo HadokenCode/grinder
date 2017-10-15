@@ -214,3 +214,12 @@ func TestNotFoundHandler(t *testing.T) {
 		assert.Equal(t, "\"Not Found\"", w.Body.String())
 	}
 }
+
+func TestErrorHTTP(t *testing.T) {
+	err := &HTTPError{
+		Code:    404,
+		Message: "Not Found",
+	}
+
+	assert.Equal(t, "code=404, message=Not Found", err.Error())
+}

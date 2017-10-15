@@ -32,19 +32,19 @@ var NotFoundHandler = func(c Context) error {
 	c.Response().WriteHeader(404)
 	c.Response().Write([]byte(b))
 
-	return HTTPError(http.StatusNotFound)
+	return NewHTTPError(http.StatusNotFound)
 }
 
-// ErrorHTTP handles structure of new HTTP error
-type ErrorHTTP struct {
+// HTTPError handles structure of new HTTP error
+type HTTPError struct {
 	Code    int
 	Message interface{}
 	Inner   error
 }
 
-// HTTPError creates new HTTP error
-func HTTPError(code int, message ...interface{}) *ErrorHTTP {
-	err := &ErrorHTTP{
+// NewHTTPError creates new HTTP error
+func NewHTTPError(code int, message ...interface{}) *HTTPError {
+	err := &HTTPError{
 		Code:    code,
 		Message: http.StatusText(code),
 	}
@@ -52,23 +52,9 @@ func HTTPError(code int, message ...interface{}) *ErrorHTTP {
 	return err
 }
 
-func (e *ErrorHTTP) Error() string {
+func (e *HTTPError) Error() string {
 	return fmt.Sprintf("code=%d, message=%v", e.Code, e.Message)
 }
-
-// func NotFoundHandler(c Context) (err error) {
-// 	b, err := json.Marshal("Not Found")
-//
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-//
-// 	c.Response().Header().Set("Content-Type", "application/json")
-// 	c.Response().WriteHeader(404)
-// 	_, err = c.Response().Write([]byte(b))
-//
-// 	return
-// }
 
 // New creates new Grinder instance
 func New() *Grinder {

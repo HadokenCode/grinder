@@ -17,5 +17,5 @@ func TestCORS(t *testing.T) {
 	ctx := g.NewContext(rec, req)
 	nfh := grinder.NotFoundHandler(ctx)
 
-	assert.True(t, reflect.TypeOf(nfh).String() == "*grinder.ErrorHTTP")
+	assert.True(t, reflect.TypeOf(nfh).String() == "*grinder.HTTPError")
 }

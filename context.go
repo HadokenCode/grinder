@@ -12,6 +12,7 @@ type (
 		Response() *Response
 		JSON(int, interface{}) error
 		String(int, string) error
+		Code(int) error
 		HTTPError(int, string) error
 		AddParams(map[string]string)
 		GetParam(string) string
@@ -56,6 +57,11 @@ func (c *context) String(code int, s string) (err error) {
 	c.response.WriteHeader(code)
 	_, err = c.response.Write([]byte(s))
 	return
+}
+
+func (c *context) Code(code int) (err error) {
+	c.response.WriteHeader(code)
+	return nil
 }
 
 func (c *context) HTTPError(code int, message string) (err error) {

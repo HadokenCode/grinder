@@ -25,18 +25,35 @@ type Handler func(Context) error
 type Middleware func(Context, Handler) Handler
 
 // NotFoundHandler default 404 handler for not found routes
-func NotFoundHandler(c Context) (err error) {
-	b, err := json.Marshal("Not Found")
-
-	if err != nil {
-		fmt.Println(err)
-	}
+var NotFoundHandler = func(c Context) error {
+	b, _ := json.Marshal("Not Found")
 
 	c.Response().Header().Set("Content-Type", "application/json")
 	c.Response().WriteHeader(404)
-	_, err = c.Response().Write([]byte(b))
+	c.Response().Write([]byte(b))
 
-	return
+	return NewHTTPError(http.StatusNotFound)
+}
+
+// HTTPError handles structure of new HTTP error
+type HTTPError struct {
+	Code    int
+	Message interface{}
+	Inner   error
+}
+
+// NewHTTPError creates new HTTP error
+func NewHTTPError(code int, message ...interface{}) *HTTPError {
+	err := &HTTPError{
+		Code:    code,
+		Message: http.StatusText(code),
+	}
+
+	return err
+}
+
+func (e *HTTPError) Error() string {
+	return fmt.Sprintf("code=%d, message=%v", e.Code, e.Message)
 }
 
 // New creates new Grinder instance

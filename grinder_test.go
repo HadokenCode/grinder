@@ -205,7 +205,7 @@ func TestNotFoundHandler(t *testing.T) {
 		return c.JSON(200, "This is a test")
 	})
 
-	r, _ := http.NewRequest("GET", "/blah", strings.NewReader("JSON"))
+	r, _ := http.NewRequest("GET", "/blah", strings.NewReader("String"))
 	w := httptest.NewRecorder()
 
 	g.ServeHTTP(w, r)
@@ -213,4 +213,13 @@ func TestNotFoundHandler(t *testing.T) {
 	if assert.Equal(t, 404, w.Code) {
 		assert.Equal(t, "\"Not Found\"", w.Body.String())
 	}
+}
+
+func TestErrorHTTP(t *testing.T) {
+	err := &HTTPError{
+		Code:    404,
+		Message: "Not Found",
+	}
+
+	assert.Equal(t, "code=404, message=Not Found", err.Error())
 }

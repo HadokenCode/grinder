@@ -205,7 +205,7 @@ func TestNotFoundHandler(t *testing.T) {
 		return c.JSON(200, "This is a test")
 	})
 
-	r, _ := http.NewRequest("GET", "/blah", strings.NewReader("JSON"))
+	r, _ := http.NewRequest("GET", "/blah", strings.NewReader("String"))
 	w := httptest.NewRecorder()
 
 	g.ServeHTTP(w, r)

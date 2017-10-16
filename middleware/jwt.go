@@ -45,7 +45,7 @@ func JWTError(c grinder.Context) error {
 func JWT(c grinder.Context, handler grinder.Handler) grinder.Handler {
 	config, err := godotenv.Read()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Print("Error loading .env file")
 	}
 
 	j := DefaultJWT

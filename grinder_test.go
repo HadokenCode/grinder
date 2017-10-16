@@ -246,16 +246,17 @@ func TestServerHasCorrectPort(t *testing.T) {
 	g := New()
 
 	server := g.NewServer()
+	server.Addr = "8080"
 
-	assert.Equal(t, "9999", server.Addr)
+	assert.Equal(t, "8080", server.Addr)
 }
 
-// func TestNoEnvFileIsFound(t *testing.T) {
-// 	g := New()
-//
-// 	output := captureOutput(func() {
-// 		g.NewServer()
-// 	})
-//
-// 	assert.Contains(t, output, "Error loading .env file")
-// }
+func TestNoEnvFileIsFound(t *testing.T) {
+	g := New()
+
+	output := captureOutput(func() {
+		g.NewServer()
+	})
+
+	assert.Contains(t, output, "Error loading .env file")
+}

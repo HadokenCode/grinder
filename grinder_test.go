@@ -1,9 +1,12 @@
 package grinder
 
 import (
+	"bytes"
+	// "fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -15,6 +18,14 @@ import (
 
 type MockedGrinder struct {
 	mock.Mock
+}
+
+func captureOutput(f func()) string {
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	f()
+	log.SetOutput(os.Stderr)
+	return buf.String()
 }
 
 func handler(c Context) error {
@@ -129,11 +140,10 @@ func TestAddPostRoute(t *testing.T) {
 }
 
 func TestConfigLoad(t *testing.T) {
-	// config := config.Load("./testdata")
 	var config map[string]string
 	config, err := godotenv.Read()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Print("Error loading .env file")
 	}
 
 	assert.True(t, reflect.TypeOf(config).String() == "map[string]string")
@@ -229,5 +239,23 @@ func TestAServerIsReturned(t *testing.T) {
 
 	server := g.NewServer()
 
-	assert.True(t, reflect.TypeOf(server).String() == "http.Server")
+	assert.True(t, reflect.TypeOf(server).String() == "*http.Server")
 }
+
+func TestServerHasCorrectPort(t *testing.T) {
+	g := New()
+
+	server := g.NewServer()
+
+	assert.Equal(t, "9999", server.Addr)
+}
+
+// func TestNoEnvFileIsFound(t *testing.T) {
+// 	g := New()
+//
+// 	output := captureOutput(func() {
+// 		g.NewServer()
+// 	})
+//
+// 	assert.Contains(t, output, "Error loading .env file")
+// }

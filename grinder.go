@@ -133,13 +133,13 @@ func (g *Grinder) Start() {
 }
 
 // NewServer creates a server object for services
-func (g *Grinder) NewServer() http.Server {
+func (g *Grinder) NewServer() *http.Server {
 	config, err := godotenv.Read()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Print("Error loading .env file")
 	}
 
-	server := http.Server{
+	server := &http.Server{
 		Addr:    config["PORT"],
 		Handler: g,
 	}

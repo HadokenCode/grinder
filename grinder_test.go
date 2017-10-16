@@ -254,9 +254,13 @@ func TestServerHasCorrectPort(t *testing.T) {
 func TestNoEnvFileIsFound(t *testing.T) {
 	g := New()
 
+	os.Rename(".env", ".testing")
+
 	output := captureOutput(func() {
 		g.NewServer()
 	})
+
+	os.Rename(".testing", ".env")
 
 	assert.Contains(t, output, "Error loading .env file")
 }

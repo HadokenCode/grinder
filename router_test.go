@@ -1,7 +1,10 @@
 package grinder
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -86,4 +89,22 @@ func TestParseURLParamsOnRootRoute(t *testing.T) {
 	result := g.router.parseURLParams("GET", "/", "/", "route")
 
 	assert.True(t, reflect.TypeOf(result).String() == "map[string]string")
+}
+
+func TestParseURLParamsOnRoute(t *testing.T) {
+	g := New()
+
+	g.GET("/path/:route", func(c Context) error {
+		return c.JSON(200, "This is a test")
+	})
+
+	r, _ := http.NewRequest("GET", "/path/test", strings.NewReader("String"))
+	w := httptest.NewRecorder()
+
+	g.ServeHTTP(w, r)
+
+	result := g.router.parseURLParams("GET", "/path/test", "GET/path/([aA-zZ0-9_-]+)", "GET/path/:route")
+
+	// assert.True(t, reflect.TypeOf(result).String() == "map[string]string")
+	assert.Equal(t, "test", result["route"])
 }

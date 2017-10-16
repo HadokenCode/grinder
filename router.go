@@ -125,7 +125,6 @@ func parseQueryParams(url string) map[string]string {
 		params[values[0]] = values[1]
 	}
 
-	params["param"] = "1"
 	return params
 }
 

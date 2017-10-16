@@ -164,3 +164,15 @@ func TestHasParam(t *testing.T) {
 	assert.True(t, g.GetContext().HasParam("query1"))
 	assert.True(t, g.GetContext().HasParam("query2"))
 }
+
+func TestCodeFuncReturnsNil(t *testing.T) {
+	g := New()
+
+	g.GET("/uri", SampleMethod)
+
+	r, _ := http.NewRequest("GET", "/uri?query1=1&query2=2", strings.NewReader(JSON))
+	w := httptest.NewRecorder()
+	g.ServeHTTP(w, r)
+
+	assert.Nil(t, g.GetContext().Code(200))
+}
